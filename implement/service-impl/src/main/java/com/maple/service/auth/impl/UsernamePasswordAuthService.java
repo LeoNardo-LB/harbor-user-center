@@ -4,8 +4,7 @@ import com.google.common.collect.Maps;
 import com.maple.core.auth.UserInfoService;
 import com.maple.core.model.auth.AuthenticateModel;
 import com.maple.core.model.auth.UsernamePasswordModel;
-import com.maple.core.model.db.UserModel;
-import com.maple.core.result.AuthenticateResult;
+import com.maple.core.model.db.UserInfoModel;
 import com.maple.service.auth.AuthenticationService;
 import com.maple.utils.AroundLog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,28 +38,26 @@ public class UsernamePasswordAuthService implements AuthenticationService {
      */
     @Override
     @AroundLog
-    public AuthenticateResult authenticate(AuthenticateModel authenticationModel) {
+    public AuthenticateModel authenticate(AuthenticateModel authenticationModel) {
         UsernamePasswordModel model = (UsernamePasswordModel) authenticationModel;
         model.authenticateCheck();
 
-        HashMap<String, Future<UserModel>> futureMap = Maps.newHashMap();
-        futureMap.put("getUserByAccount", CERTIFICATE_QUERY_EXECUTOR.submit(() -> userInfoService.getUserByAccount(model.getPassword())));
-        futureMap.put("getUserByEmail", CERTIFICATE_QUERY_EXECUTOR.submit(() -> userInfoService.getUserByEmail(model.getPassword())));
-        futureMap.put("getUserByPhone", CERTIFICATE_QUERY_EXECUTOR.submit(() -> userInfoService.getUserByPhone(model.getPassword())));
+        HashMap<String, Future<UserInfoModel>> futureMap = Maps.newHashMap();
+        futureMap.put("getUserByAccount", CERTIFICATE_QUERY_EXECUTOR.submit(() -> userInfoService.getUserByAccount(model.getCertificate())));
+        futureMap.put("getUserByEmail", CERTIFICATE_QUERY_EXECUTOR.submit(() -> userInfoService.getUserByEmail(model.getCertificate())));
+        futureMap.put("getUserByPhone", CERTIFICATE_QUERY_EXECUTOR.submit(() -> userInfoService.getUserByPhone(model.getCertificate())));
 
-        AuthenticateResult result = new AuthenticateResult();
         // 获取并匹配
         AtomicBoolean match = new AtomicBoolean(false);
         futureMap.entrySet().stream()
                 .filter(entry -> Objects.nonNull(getFutureValue(entry)))
                 .findFirst()
                 .ifPresent(entry -> {
-                    UserModel userModel = getFutureValue(entry);
-                    match.set(encoder.matches(((UsernamePasswordModel) authenticationModel).getPassword(), userModel.getPassword()));
-                    result.setMessage(entry.getKey());
+                    UserInfoModel userInfoModel = getFutureValue(entry);
+                    match.set(encoder.matches(((UsernamePasswordModel) authenticationModel).getPassword(), userInfoModel.getPassword()));
                 });
-        result.setAuthSuccess(match.get());
-        return result;
+        model.setAuthSuccess(match.get());
+        return authenticationModel;
     }
 
     /**
@@ -68,7 +65,7 @@ public class UsernamePasswordAuthService implements AuthenticationService {
      * @param entry
      * @return
      */
-    private UserModel getFutureValue(Entry<String, Future<UserModel>> entry) {
+    private UserInfoModel getFutureValue(Entry<String, Future<UserInfoModel>> entry) {
         try {
             return entry.getValue().get();
         } catch (InterruptedException | ExecutionException e) {

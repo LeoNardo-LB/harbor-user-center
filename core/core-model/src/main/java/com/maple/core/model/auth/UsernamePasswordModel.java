@@ -20,4 +20,9 @@ public class UsernamePasswordModel extends AuthenticateModel {
         Assert.notBlank(getPassword(), () -> new BizException("密码不能为空", 1002));
     }
 
+    @Override
+    protected void cleanAuthKey() {
+        this.password = null;
+    }
+
 }

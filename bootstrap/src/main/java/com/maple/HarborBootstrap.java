@@ -41,7 +41,7 @@ public class HarborBootstrap implements CommandLineRunner {
         log.info("start to print application config: ");
         classpathConfigs.forEach(r -> {
             Map<String, Object> source = r.getSource();
-            source.forEach((k, v) -> log.info("-> " + k + " = " + v));
+            source.forEach((k, v) -> log.info("|-> " + k + " = " + v));
         });
     }
 

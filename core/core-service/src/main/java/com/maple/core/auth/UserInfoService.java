@@ -1,30 +1,30 @@
 package com.maple.core.auth;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.maple.core.model.db.UserModel;
+import com.maple.core.model.db.UserInfoModel;
 import com.maple.core.request.UserPageQuery;
 
 import java.util.List;
 
 public interface UserInfoService {
 
-    UserModel getUserById(Long id);
+    UserInfoModel getUserById(Long id);
 
-    UserModel getUserByUId(Long uid);
+    UserInfoModel getUserByUId(Long uid);
 
-    UserModel getUserByAccount(String account);
+    UserInfoModel getUserByAccount(String account);
 
-    UserModel getUserByPhone(String phoneNumber);
+    UserInfoModel getUserByPhone(String phoneNumber);
 
-    UserModel getUserByEmail(String email);
+    UserInfoModel getUserByEmail(String email);
 
-    Page<UserModel> pageListUsers(UserPageQuery userPageQuery);
+    Page<UserInfoModel> pageListUsers(UserPageQuery userPageQuery);
 
-    Boolean addUser(UserModel userModel);
+    Boolean addUser(UserInfoModel userInfoModel);
 
-    Boolean modifyUserById(UserModel userModel);
+    Boolean modifyUserById(UserInfoModel userInfoModel);
 
-    Long modifyUsersByIds(List<UserModel> userModels);
+    Long modifyUsersByIds(List<UserInfoModel> userInfoModels);
 
     Boolean disableUserById(Long id);
 

@@ -6,12 +6,10 @@
         <artifactId>harbor-ucenter-parent</artifactId>
         <groupId>com.maple.ucenter</groupId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
-    <!--<packaging>pom</packaging>-->
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bootstrap</artifactId>
+    <artifactId>mount-component</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -22,28 +20,8 @@
     <dependencies>
         <dependency>
             <groupId>com.maple.ucenter</groupId>
-            <artifactId>web-portal</artifactId>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
+            <artifactId>common-facade</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <!--springboot 打包插件-->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
-
 
 </project>

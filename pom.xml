@@ -11,8 +11,8 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.maple</groupId>
-    <artifactId>harbor-user-center</artifactId>
+    <groupId>com.maple.ucenter</groupId>
+    <artifactId>harbor-ucenter-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
@@ -27,68 +27,69 @@
         <module>bootstrap</module>
         <module>web-portal</module>
         <module>z-test</module>
+        <module>mount-component</module>
     </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <harbor-user-center-version>1.0-SNAPSHOT</harbor-user-center-version>
-        <harbor-user-center-facade-version>1.0-SNAPSHOT</harbor-user-center-facade-version>
+        <harbor-ucenter-version>1.0-SNAPSHOT</harbor-ucenter-version>
+        <harbor-ucenter-facade-version>1.0-SNAPSHOT</harbor-ucenter-facade-version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <!--项目本身依赖-->
             <dependency>
-                <groupId>com.maple</groupId>
+                <groupId>com.maple.ucenter</groupId>
                 <artifactId>common-dal</artifactId>
-                <version>${harbor-user-center-version}</version>
+                <version>${harbor-ucenter-version}</version>
             </dependency>
             <dependency>
-                <groupId>com.maple</groupId>
+                <groupId>com.maple.ucenter</groupId>
                 <artifactId>common-facade</artifactId>
-                <version>${harbor-user-center-facade-version}</version>
+                <version>${harbor-ucenter-facade-version}</version>
             </dependency>
             <dependency>
-                <groupId>com.maple</groupId>
+                <groupId>com.maple.ucenter</groupId>
                 <artifactId>common-integration</artifactId>
-                <version>${harbor-user-center-version}</version>
+                <version>${harbor-ucenter-version}</version>
             </dependency>
             <dependency>
-                <groupId>com.maple</groupId>
+                <groupId>com.maple.ucenter</groupId>
                 <artifactId>common-utils</artifactId>
-                <version>${harbor-user-center-version}</version>
+                <version>${harbor-ucenter-version}</version>
             </dependency>
             <dependency>
-                <groupId>com.maple</groupId>
+                <groupId>com.maple.ucenter</groupId>
                 <artifactId>core-model</artifactId>
-                <version>${harbor-user-center-version}</version>
+                <version>${harbor-ucenter-version}</version>
             </dependency>
             <dependency>
-                <groupId>com.maple</groupId>
+                <groupId>com.maple.ucenter</groupId>
                 <artifactId>core-service</artifactId>
-                <version>${harbor-user-center-version}</version>
+                <version>${harbor-ucenter-version}</version>
             </dependency>
             <dependency>
-                <groupId>com.maple</groupId>
+                <groupId>com.maple.ucenter</groupId>
                 <artifactId>service-share</artifactId>
-                <version>${harbor-user-center-version}</version>
+                <version>${harbor-ucenter-version}</version>
             </dependency>
             <dependency>
-                <groupId>com.maple</groupId>
+                <groupId>com.maple.ucenter</groupId>
                 <artifactId>service-impl</artifactId>
-                <version>${harbor-user-center-version}</version>
+                <version>${harbor-ucenter-version}</version>
             </dependency>
             <dependency>
-                <groupId>com.maple</groupId>
+                <groupId>com.maple.ucenter</groupId>
                 <artifactId>bootstrap</artifactId>
-                <version>${harbor-user-center-version}</version>
+                <version>${harbor-ucenter-version}</version>
             </dependency>
             <dependency>
-                <groupId>com.maple</groupId>
+                <groupId>com.maple.ucenter</groupId>
                 <artifactId>web-portal</artifactId>
-                <version>${harbor-user-center-version}</version>
+                <version>${harbor-ucenter-version}</version>
             </dependency>
 
             <!--三方依赖-->

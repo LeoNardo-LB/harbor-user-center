@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.maple.core.convert.UserInfoConvertor;
 import com.maple.core.enums.Status;
 import com.maple.core.exception.BizException;
-import com.maple.core.model.db.UserModel;
+import com.maple.core.model.db.UserInfoModel;
 import com.maple.core.request.UserPageQuery;
 import com.maple.core.auth.UserInfoService;
 import com.maple.dal.dao.MuUserInfoDao;
@@ -30,7 +30,7 @@ public class UserInfoServiceImpl implements UserInfoService {
      * @return
      */
     @Override
-    public UserModel getUserById(Long id) {
+    public UserInfoModel getUserById(Long id) {
         MuUserInfo userInfo = userInfoDao.selectById(id);
         return UserInfoConvertor.convert2Model(userInfo);
     }
@@ -40,7 +40,7 @@ public class UserInfoServiceImpl implements UserInfoService {
      * @return
      */
     @Override
-    public UserModel getUserByUId(Long uid) {
+    public UserInfoModel getUserByUId(Long uid) {
         LambdaQueryWrapper<MuUserInfo> wrapper = new LambdaQueryWrapper<MuUserInfo>().eq(MuUserInfo::getUserId, uid);
         return UserInfoConvertor.convert2Model(userInfoDao.selectOne(wrapper));
     }
@@ -50,7 +50,7 @@ public class UserInfoServiceImpl implements UserInfoService {
      * @return
      */
     @Override
-    public UserModel getUserByAccount(String account) {
+    public UserInfoModel getUserByAccount(String account) {
         LambdaQueryWrapper<MuUserInfo> wrapper = new LambdaQueryWrapper<MuUserInfo>().eq(MuUserInfo::getAccount, account);
         return UserInfoConvertor.convert2Model(userInfoDao.selectOne(wrapper));
     }
@@ -60,7 +60,7 @@ public class UserInfoServiceImpl implements UserInfoService {
      * @return
      */
     @Override
-    public UserModel getUserByPhone(String phoneNumber) {
+    public UserInfoModel getUserByPhone(String phoneNumber) {
         LambdaQueryWrapper<MuUserInfo> wrapper = new LambdaQueryWrapper<MuUserInfo>().eq(MuUserInfo::getPhoneNumber, phoneNumber);
         return UserInfoConvertor.convert2Model(userInfoDao.selectOne(wrapper));
     }
@@ -70,7 +70,7 @@ public class UserInfoServiceImpl implements UserInfoService {
      * @return
      */
     @Override
-    public UserModel getUserByEmail(String email) {
+    public UserInfoModel getUserByEmail(String email) {
         LambdaQueryWrapper<MuUserInfo> wrapper = new LambdaQueryWrapper<MuUserInfo>().eq(MuUserInfo::getEmail, email);
         return UserInfoConvertor.convert2Model(userInfoDao.selectOne(wrapper));
     }
@@ -80,47 +80,47 @@ public class UserInfoServiceImpl implements UserInfoService {
      * @return
      */
     @Override
-    public Page<UserModel> pageListUsers(UserPageQuery userPageQuery) {
+    public Page<UserInfoModel> pageListUsers(UserPageQuery userPageQuery) {
         LambdaQueryWrapper<MuUserInfo> wrapper = new LambdaQueryWrapper<MuUserInfo>();
         Page<MuUserInfo> page = userInfoDao.selectPage(Page.of(userPageQuery.getPageNum(), userPageQuery.getPageSize()), wrapper);
         return UserInfoConvertor.convert2ModelPage(page);
     }
 
     /**
-     * @param userModel
+     * @param userInfoModel
      * @return
      */
     @Override
     @AroundLog
-    public Boolean addUser(UserModel userModel) {
-        userModel.checkAddInfo();
-        MuUserInfo entity = UserInfoConvertor.convert2Do(userModel);
+    public Boolean addUser(UserInfoModel userInfoModel) {
+        userInfoModel.checkAddInfo();
+        MuUserInfo entity = UserInfoConvertor.convert2Do(userInfoModel);
         Assert.isTrue(userInfoDao.insert(entity) > 0, () -> new BizException("新增用户失败", 1002));
-        userModel.setId(entity.getId());
+        userInfoModel.setId(entity.getId());
         return true;
     }
 
     /**
-     * @param userModel
+     * @param userInfoModel
      * @return
      */
     @Override
-    public Boolean modifyUserById(UserModel userModel) {
-        userModel.checkModifyInfo();
-        return userInfoDao.updateById(UserInfoConvertor.convert2Do(userModel)) > 0;
+    public Boolean modifyUserById(UserInfoModel userInfoModel) {
+        userInfoModel.checkModifyInfo();
+        return userInfoDao.updateById(UserInfoConvertor.convert2Do(userInfoModel)) > 0;
     }
 
     /**
-     * @param userModels
+     * @param userInfoModels
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Long modifyUsersByIds(List<UserModel> userModels) {
-        if (CollectionUtils.isEmpty(userModels)) {
+    public Long modifyUsersByIds(List<UserInfoModel> userInfoModels) {
+        if (CollectionUtils.isEmpty(userInfoModels)) {
             return 0L;
         }
-        return userModels.stream().map(this::modifyUserById).count();
+        return userInfoModels.stream().map(this::modifyUserById).count();
     }
 
     /**

@@ -8,10 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 @Data
-public class UserModel implements DbModel {
+public class UserInfoModel implements DbModel {
 
     //主键id
     private Long id;
