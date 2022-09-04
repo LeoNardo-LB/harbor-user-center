@@ -1,0 +1,26 @@
+server:
+  port: 3307
+
+spring:
+  application:
+    name: maple-harbor
+  datasource:
+    url: jdbc:mysql://49.234.3.131:3306/milk_user
+    username: leonardo
+    password: cs19jiang1
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  intercept:
+    insertTimeColumn: createTime
+    modifyTimeColumn: modifyTime
+#    insertUserColumn: insertUserId
+    modifyUserColumn: modifierid
+
+logging:
+  level:
+    root: info
