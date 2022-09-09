@@ -1,6 +1,7 @@
 package com.maple.service.auth.impl;
 
 import com.alibaba.fastjson2.JSON;
+import com.maple.core.auth.UserInfoService;
 import com.maple.core.cache.CacheService;
 import com.maple.core.enums.LoginAuthWay;
 import com.maple.core.model.auth.AuthenticateModel;
@@ -8,8 +9,6 @@ import com.maple.core.model.auth.UsernamePasswordModel;
 import com.maple.core.model.db.UserInfoModel;
 import com.maple.service.auth.AuthenticationService;
 import com.maple.service.auth.LoginService;
-import com.maple.service.manage.UserInfoManager;
-import com.maple.service.share.result.ImplResult;
 import com.maple.utils.CacheUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,7 +25,7 @@ public class WebLoginService implements LoginService {
     private AuthenticationService authenticationService;
 
     @Autowired
-    private UserInfoManager userInfoManager;
+    private UserInfoService userInfoService;
 
     @Autowired
     private CacheService cacheService;
@@ -87,7 +86,7 @@ public class WebLoginService implements LoginService {
         } else if (LoginAuthWay.PHONE_NUMBER.getCode().equals(passwordModel.getAuthWay())) {
             userInfoModel.setPhoneNumber(passwordModel.getCertificate());
         }
-        return userInfoManager.addUser(userInfoModel).getData();
+        return userInfoService.addUser(userInfoModel).getData();
     }
 
 }

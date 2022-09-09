@@ -43,19 +43,19 @@ public class UsernamePasswordAuthService implements AuthenticationService {
         model.authenticateCheck();
 
         HashMap<String, Future<UserInfoModel>> futureMap = Maps.newHashMap();
-        futureMap.put("getUserByAccount", CERTIFICATE_QUERY_EXECUTOR.submit(() -> userInfoService.getUserByAccount(model.getCertificate())));
-        futureMap.put("getUserByEmail", CERTIFICATE_QUERY_EXECUTOR.submit(() -> userInfoService.getUserByEmail(model.getCertificate())));
-        futureMap.put("getUserByPhone", CERTIFICATE_QUERY_EXECUTOR.submit(() -> userInfoService.getUserByPhone(model.getCertificate())));
+        futureMap.put("getUserByAccount",
+                CERTIFICATE_QUERY_EXECUTOR.submit(() -> userInfoService.getUserByAccount(model.getCertificate()).getData()));
+        futureMap.put("getUserByEmail",
+                CERTIFICATE_QUERY_EXECUTOR.submit(() -> userInfoService.getUserByEmail(model.getCertificate()).getData()));
+        futureMap.put("getUserByPhone",
+                CERTIFICATE_QUERY_EXECUTOR.submit(() -> userInfoService.getUserByPhone(model.getCertificate()).getData()));
 
         // 获取并匹配
         AtomicBoolean match = new AtomicBoolean(false);
-        futureMap.entrySet().stream()
-                .filter(entry -> Objects.nonNull(getFutureValue(entry)))
-                .findFirst()
-                .ifPresent(entry -> {
-                    UserInfoModel userInfoModel = getFutureValue(entry);
-                    match.set(encoder.matches(((UsernamePasswordModel) authenticationModel).getPassword(), userInfoModel.getPassword()));
-                });
+        futureMap.entrySet().stream().filter(entry -> Objects.nonNull(getFutureValue(entry))).findFirst().ifPresent(entry -> {
+            UserInfoModel userInfoModel = getFutureValue(entry);
+            match.set(encoder.matches(((UsernamePasswordModel) authenticationModel).getPassword(), userInfoModel.getPassword()));
+        });
         model.setAuthSuccess(match.get());
         return authenticationModel;
     }

@@ -3,35 +3,36 @@ package com.maple.core.auth;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.maple.core.model.db.UserInfoModel;
 import com.maple.core.request.UserPageQuery;
+import com.maple.core.result.base.BaseResult;
 
 import java.util.List;
 
 public interface UserInfoService {
 
-    UserInfoModel getUserById(Long id);
+    BaseResult<UserInfoModel> getUserById(Long id);
 
-    UserInfoModel getUserByUId(Long uid);
+    BaseResult<UserInfoModel> getUserByUId(Long uid);
 
-    UserInfoModel getUserByAccount(String account);
+    BaseResult<UserInfoModel> getUserByAccount(String account);
 
-    UserInfoModel getUserByPhone(String phoneNumber);
+    BaseResult<UserInfoModel> getUserByPhone(String phoneNumber);
 
-    UserInfoModel getUserByEmail(String email);
+    BaseResult<UserInfoModel> getUserByEmail(String email);
 
-    Page<UserInfoModel> pageListUsers(UserPageQuery userPageQuery);
+    BaseResult<Page<UserInfoModel>> pageListUsers(UserPageQuery userPageQuery);
 
-    Boolean addUser(UserInfoModel userInfoModel);
+    BaseResult<Boolean> addUser(UserInfoModel userInfoModel);
 
-    Boolean modifyUserById(UserInfoModel userInfoModel);
+    BaseResult<Boolean> modifyUserById(UserInfoModel userInfoModel);
 
-    Long modifyUsersByIds(List<UserInfoModel> userInfoModels);
+    BaseResult<Long> modifyUsersByIds(List<UserInfoModel> userInfoModels);
 
-    Boolean disableUserById(Long id);
+    BaseResult<Boolean> disableUserById(Long id);
 
-    Boolean disableUserByUid(Long uid);
+    BaseResult<Boolean> disableUserByUid(Long uid);
 
-    Boolean removeUserById(Long id);
+    BaseResult<Boolean> removeUserById(Long id);
 
-    Boolean removeUserByUid(Long uid);
+    BaseResult<Boolean> removeUserByUid(Long uid);
 
 }

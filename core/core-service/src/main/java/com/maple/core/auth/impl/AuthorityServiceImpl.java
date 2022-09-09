@@ -9,15 +9,21 @@ import com.maple.core.exception.BizException;
 import com.maple.core.model.db.AuthorityModel;
 import com.maple.core.request.AuthorityPageQuery;
 import com.maple.core.auth.AuthorityService;
+import com.maple.core.result.base.BaseResult;
 import com.maple.dal.dao.MuAuthorityDao;
 import com.maple.dal.entity.MuAuthority;
+import com.maple.utils.AroundLog;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+
 @Service
+@Slf4j
 public class AuthorityServiceImpl implements AuthorityService {
 
     @Autowired
@@ -28,8 +34,9 @@ public class AuthorityServiceImpl implements AuthorityService {
      * @return
      */
     @Override
-    public AuthorityModel getAuthorityById(Long id) {
-        return AuthorityConvertor.convert2Model(authorityDao.selectById(id));
+    @AroundLog
+    public BaseResult<AuthorityModel> getAuthorityById(Long id) {
+        return BaseResult.success(AuthorityConvertor.convert2Model(authorityDao.selectById(id)));
     }
 
     /**
@@ -37,14 +44,18 @@ public class AuthorityServiceImpl implements AuthorityService {
      * @return
      */
     @Override
-    public AuthorityModel getAuthorityByCode(String code) {
-        return AuthorityConvertor.convert2Model(authorityDao.selectOne(new LambdaQueryWrapper<MuAuthority>().eq(MuAuthority::getAuthorityCode, code)));
+    @AroundLog
+    public BaseResult<AuthorityModel> getAuthorityByCode(String code) {
+        return BaseResult.success(AuthorityConvertor.convert2Model(
+                authorityDao.selectOne(new LambdaQueryWrapper<MuAuthority>().eq(MuAuthority::getAuthorityCode, code))));
     }
 
     @Override
-    public List<AuthorityModel> getAuthoritiesByCodes(List<String> codes) {
-        List<MuAuthority> muAuthoritys = authorityDao.selectList(new LambdaQueryWrapper<MuAuthority>().in(MuAuthority::getAuthorityCode, codes));
-        return AuthorityConvertor.convert2Models(muAuthoritys);
+    @AroundLog
+    public BaseResult<List<AuthorityModel>> getAuthoritiesByCodes(List<String> codes) {
+        List<MuAuthority> muAuthoritys = authorityDao.selectList(
+                new LambdaQueryWrapper<MuAuthority>().in(MuAuthority::getAuthorityCode, codes));
+        return BaseResult.success(AuthorityConvertor.convert2Models(muAuthoritys));
     }
 
     /**
@@ -52,10 +63,11 @@ public class AuthorityServiceImpl implements AuthorityService {
      * @return
      */
     @Override
-    public Page<AuthorityModel> pageListAuthorities(AuthorityPageQuery authorityPageQuery) {
+    public BaseResult<Page<AuthorityModel>> pageListAuthorities(AuthorityPageQuery authorityPageQuery) {
         LambdaQueryWrapper<MuAuthority> wrapper = new LambdaQueryWrapper<>();
-        Page<MuAuthority> page = authorityDao.selectPage(Page.of(authorityPageQuery.getPageNum(), authorityPageQuery.getPageSize()), wrapper);
-        return AuthorityConvertor.convert2ModelPage(page);
+        Page<MuAuthority> page = authorityDao.selectPage(Page.of(authorityPageQuery.getPageNum(), authorityPageQuery.getPageSize()),
+                wrapper);
+        return BaseResult.success(AuthorityConvertor.convert2ModelPage(page));
     }
 
     /**
@@ -63,12 +75,17 @@ public class AuthorityServiceImpl implements AuthorityService {
      * @return
      */
     @Override
-    public Boolean addAuthority(AuthorityModel authorityModel) {
-        authorityModel.checkAddInfo();
-        MuAuthority muAuthority = AuthorityConvertor.convert2Do(authorityModel);
-        Assert.isTrue(authorityDao.insert(muAuthority) > 0, () -> new BizException("添加角色失败", 1002));
-        authorityModel.setId(muAuthority.getId());
-        return true;
+    public BaseResult<Boolean> addAuthority(AuthorityModel authorityModel) {
+        try {
+            authorityModel.checkAddInfo();
+            MuAuthority muAuthority = AuthorityConvertor.convert2Do(authorityModel);
+            Assert.isTrue(authorityDao.insert(muAuthority) > 0, () -> new BizException("添加角色失败", 1002));
+            authorityModel.setId(muAuthority.getId());
+            return BaseResult.success(true);
+        } catch (DuplicateKeyException e) {
+            log.warn("已有重复角色, " + e.getMessage());
+            return BaseResult.success(false, "已有重复用户, " + e.getMessage());
+        }
     }
 
     /**
@@ -76,9 +93,9 @@ public class AuthorityServiceImpl implements AuthorityService {
      * @return
      */
     @Override
-    public Boolean modifyAuthorityById(AuthorityModel authorityModel) {
+    public BaseResult<Boolean> modifyAuthorityById(AuthorityModel authorityModel) {
         authorityModel.checkModifyInfo();
-        return authorityDao.updateById(AuthorityConvertor.convert2Do(authorityModel)) > 0;
+        return BaseResult.success(authorityDao.updateById(AuthorityConvertor.convert2Do(authorityModel)) > 0);
     }
 
     /**
@@ -87,11 +104,11 @@ public class AuthorityServiceImpl implements AuthorityService {
      */
     @Override
     @Transactional
-    public Long modifyAuthorityByIds(List<AuthorityModel> authorityModels) {
+    public BaseResult<Long> modifyAuthorityByIds(List<AuthorityModel> authorityModels) {
         if (CollectionUtils.isEmpty(authorityModels)) {
-            return 0L;
+            return BaseResult.success(0L);
         }
-        return authorityModels.stream().map(this::modifyAuthorityById).count();
+        return BaseResult.success(authorityModels.stream().map(this::modifyAuthorityById).count());
     }
 
     /**
@@ -99,10 +116,10 @@ public class AuthorityServiceImpl implements AuthorityService {
      * @return
      */
     @Override
-    public Boolean disableAuthorityById(Long id) {
+    public BaseResult<Boolean> disableAuthorityById(Long id) {
         MuAuthority muAuthority = authorityDao.selectById(id);
         muAuthority.setStatus(Status.DISABLE.name());
-        return authorityDao.updateById(muAuthority) > 0;
+        return BaseResult.success(authorityDao.updateById(muAuthority) > 0);
     }
 
     /**
@@ -110,10 +127,10 @@ public class AuthorityServiceImpl implements AuthorityService {
      * @return
      */
     @Override
-    public Boolean disableAuthorityByCode(String code) {
+    public BaseResult<Boolean> disableAuthorityByCode(String code) {
         MuAuthority muAuthority = authorityDao.selectOne(new LambdaQueryWrapper<MuAuthority>().eq(MuAuthority::getAuthorityCode, code));
         muAuthority.setStatus(Status.DISABLE.name());
-        return authorityDao.updateById(muAuthority) > 0;
+        return BaseResult.success(authorityDao.updateById(muAuthority) > 0);
     }
 
     /**
@@ -121,8 +138,8 @@ public class AuthorityServiceImpl implements AuthorityService {
      * @return
      */
     @Override
-    public Boolean removeAuthorityById(Long id) {
-        return authorityDao.deleteById(id) > 0;
+    public BaseResult<Boolean> removeAuthorityById(Long id) {
+        return BaseResult.success(authorityDao.deleteById(id) > 0);
     }
 
     /**
@@ -130,8 +147,8 @@ public class AuthorityServiceImpl implements AuthorityService {
      * @return
      */
     @Override
-    public Boolean removeAuthorityByCode(String code) {
-        return authorityDao.delete(new LambdaQueryWrapper<MuAuthority>().eq(MuAuthority::getAuthorityCode, code)) > 0;
+    public BaseResult<Boolean> removeAuthorityByCode(String code) {
+        return BaseResult.success(authorityDao.delete(new LambdaQueryWrapper<MuAuthority>().eq(MuAuthority::getAuthorityCode, code)) > 0);
     }
 
 }
